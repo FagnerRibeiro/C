@@ -51,6 +51,56 @@
  *
  */
 
+/*
+ * Ponteiros para funções
+ * 	° Ponteiros para funções são utilizados para armazenar endereços de funções
+ * 		° Exemplo:
+ * 			° int soma(int a, int b) { return a + b; }
+ * 				° int (*ponteiro)(int, int) = soma;
+ * 					° (*ponteiro)(10, 20); // chama a função soma com os argumentos 10 e 20
+ * 					° ponteiro(10, 20); // chama a função soma com os argumentos 10 e 20
+ * 					° printf("O resultado da soma é: %d\n", (*ponteiro)(10, 20));
+ * 					° printf("O resultado da soma é: %d\n", ponteiro(10, 20));
+ * 						° O operador de indireção (*) é opcional ao chamar a função por meio do ponteiro
+ * 						° O operador de indireção (*) é necessário ao acessar o valor de retorno da função por meio do ponteiro
+ * 							° Exemplo:
+ * 								° int resultado = (*ponteiro)(10, 20);
+ * 								° int resultado = ponteiro(10, 20);
+ * 	° Ponteiros para funções são utilizados para chamar funções dinamicamente
+ * 	° Ponteiros para funções são utilizados para passar funções como argumentos para outras funções
+ * 		° Exemplo:
+ * 			° void imprimir(int (*funcao)(int, int), int a, int b) { printf("O resultado é: %d\n", funcao(a, b)); }
+ * 				° imprimir(soma, 10, 20); // chama a função imprimir com a função soma e os argumentos 10 e 20
+ * 					° O resultado é: 30
+ * 						° A função imprimir chama a função soma com os argumentos 10 e 20 e imprime o resultado
+ * 							° A função imprimir é genérica e pode ser usada com qualquer função que tenha a mesma assinatura
+ * 								° Exemplo:
+ * 									° int subtracao(int a, int b) { return a - b; }
+ * 										° imprimir(subtracao, 20, 10); // chama a função imprimir com a função subtracao e os argumentos 20 e 10
+ * 											° O resultado é: 10
+ * 	° Ponteiros para funções são utilizados para retornar funções de outras funções
+ * 		° Exemplo:
+ * 			° int (*operacao(char op))(int, int) { return op == '+' ? soma : subtracao; }
+ * 				° int (*funcao)(int, int) = operacao('+'); // retorna a função soma
+ * 					° printf("O resultado da operação é: %d\n", funcao(10, 20)); // chama a função soma com os argumentos 10 e 20
+ * 						° O resultado da operação é: 30
+ * 							° A função operacao retorna a função soma se o operador for '+' e a função subtracao se o operador for '-'
+ * 	° Ponteiros para funções são utilizados para criar funções de ordem superior
+ * 		° Exemplo:
+ * 			° int calcular(int a, int b, int (*funcao)(int, int)) { return funcao(a, b); }
+ * 				° printf("O resultado da soma é: %d\n", calcular(10, 20, soma)); // chama a função calcular com os argumentos 10, 20 e a função soma
+ * 					° O resultado da soma é: 30
+ * 						° A função calcular chama a função soma com os argumentos 10 e 20 e retorna o resultado
+ * 	° Ponteiros para funções são utilizados para implementar callbacks
+ * 		° Exemplo:
+ * 			° void callback(void (*funcao)(void)) { funcao(); }
+ * 				° void mensagem(void) { printf("Olá, mundo!\n"); }
+ * 					° callback(mensagem); // chama a função callback com a função mensagem
+ * 						° Olá, mundo!
+ * 							° A função callback chama a função mensagem que imprime a mensagem "Olá, mundo!"
+ */
+
+
 
 /*
  * Curiosidades sobre ponteiros:
@@ -94,9 +144,25 @@
 #include <stdio.h>
 #include <stdint.h>
 
-int main(void) {
+
+char* ler_char(char mensagem[]) {
+	char *ponteiro = mensagem;
+	return ponteiro;
+}
+
+
+int main(char argc, char *argv[]) {
 	int8_t numero = 10;
 	int8_t *ponteiro = &numero;
+
+	char* (*ponteiro_char)(char[]) = ler_char;
+
+	printf("O caractere lido é: %c\n", *ponteiro_char("hello cruel world!"));
+	printf("O caractere lido é: %c\n", *ponteiro_char("hello cruel world!")+1);
+	printf("O caractere lido é: %p\n", *ponteiro_char("hello cruel world!"));
+	printf("O caractere lido é: %p\n", *ponteiro_char("hello cruel world!")+1);
+	printf("O caractere lido está em: %p\n", (*ponteiro_char)("hello cruel world!"));
+	printf("O caractere lido está em: %p\n", ponteiro_char("hello cruel world!")+1);
 
 	printf("O valor de numero é: %d\n", ponteiro); // imprime um valor incorreto devido ao tipo de dado do ponteiro
 	printf("O endereço de memória de numero é: %p\n", ponteiro); // imprime o endereço de memória de numero
